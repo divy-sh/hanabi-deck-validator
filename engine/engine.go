@@ -32,7 +32,6 @@ func Eval(game game.Game) (*game.Move, int) {
 }
 
 func maximize(game game.Game) int {
-	game.PrintBoard()
 	if game.IsGameOver() {
 		return game.Score
 	}
