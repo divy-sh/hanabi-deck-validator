@@ -7,22 +7,23 @@ import (
 
 // Game holds the state of the game.
 type Game struct {
-	Board           []int
-	Players         [][]Card
-	RemainingCards  []Card
-	DiscardedPile   []Card
-	Hints           int
-	MisfiresAllowed int
-	TotalPlayers    int
-	CurrentPlayer   int
-	Score           int
+	Board            []int
+	Players          [][]Card
+	RemainingCards   []Card
+	DiscardedPile    []Card
+	Hints            int
+	MisfiresAllowed  int
+	TotalPlayers     int
+	CurrentPlayer    int
+	Score            int
+	MaxPossibleScore int
 }
 
 // NewGame initializes a new Hanabi game.
 func NewGame() Game {
 	playerCount := 2
-	colorCount := 5
-	hints := 8
+	colorCount := 3
+	hints := 3
 	misfires := 3
 
 	// Create deck
@@ -30,9 +31,15 @@ func NewGame() Game {
 	deckBuild := map[int]int{
 		1: 3,
 		2: 2,
-		3: 2,
-		4: 2,
-		5: 1,
+		3: 1,
+	}
+
+	maxKey := 0
+
+	for key := range deckBuild {
+		if key > maxKey {
+			maxKey = key
+		}
 	}
 
 	for color := 0; color < colorCount; color++ {
@@ -48,6 +55,11 @@ func NewGame() Game {
 		deck[i], deck[j] = deck[j], deck[i]
 	})
 
+	// To handle one more turn after all cards run out
+	for range playerCount {
+		deck = append(deck, Card{Color: 0, Number: 0})
+	}
+
 	// Initialize hands
 	players := make([][]Card, playerCount)
 	for i := 0; i < playerCount; i++ {
@@ -59,14 +71,15 @@ func NewGame() Game {
 	board := make([]int, colorCount)
 
 	return Game{
-		Board:           board,
-		Players:         players,
-		RemainingCards:  deck,
-		Hints:           hints,
-		MisfiresAllowed: misfires,
-		TotalPlayers:    playerCount,
-		CurrentPlayer:   0,
-		Score:           0,
+		Board:            board,
+		Players:          players,
+		RemainingCards:   deck,
+		Hints:            hints,
+		MisfiresAllowed:  misfires,
+		TotalPlayers:     playerCount,
+		CurrentPlayer:    0,
+		Score:            0,
+		MaxPossibleScore: colorCount * maxKey,
 	}
 }
 
@@ -95,24 +108,19 @@ func (g *Game) PushMove(move Move) (Game, error) {
 	card := newGame.Players[player][move.SelectedCardIndex]
 
 	if move.Hint {
-		if newGame.Hints <= 0 {
-			return Game{}, fmt.Errorf("no hints remaining")
-		}
 		newGame.Hints--
 	} else {
-		newGame.Players[player] = append(newGame.Players[player][:move.SelectedCardIndex], newGame.Players[player][move.SelectedCardIndex+1:]...)
+		newGame.Players[player] = append(newGame.Players[player][:move.SelectedCardIndex],
+			newGame.Players[player][move.SelectedCardIndex+1:]...)
 
 		if move.Play {
 			if newGame.Board[card.Color]+1 == card.Number {
 				newGame.Board[card.Color]++
 			} else {
 				newGame.MisfiresAllowed--
-				if newGame.MisfiresAllowed < 0 {
-					return Game{}, fmt.Errorf("game over due to misfires")
-				}
 			}
 		} else if move.Discard {
-			g.DiscardedPile = append(g.DiscardedPile, g.Players[g.CurrentPlayer][move.SelectedCardIndex])
+			newGame.DiscardedPile = append(g.DiscardedPile, g.Players[g.CurrentPlayer][move.SelectedCardIndex])
 			newGame.Hints++
 		}
 
@@ -171,9 +179,9 @@ func (g *Game) PrintBoard() {
 		fmt.Println()
 	}
 
-	fmt.Println("Discard Pile:")
-	for i, val := range g.DiscardedPile {
-		fmt.Printf("%s%d%s ", colors[i], val, reset)
+	fmt.Printf("Discard Pile: ")
+	for _, card := range g.DiscardedPile {
+		fmt.Printf("%s%d%s ", colors[card.Color], card.Number, reset)
 	}
 	fmt.Println()
 
@@ -194,5 +202,5 @@ func (g *Game) changePlayer() {
 }
 
 func (g *Game) IsGameOver() bool {
-	return g.MisfiresAllowed <= 0 || len(g.RemainingCards) == 0
+	return g.MisfiresAllowed <= 0 || len(g.RemainingCards) == 0 || g.Score == g.MaxPossibleScore
 }
