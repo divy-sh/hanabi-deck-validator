@@ -7,8 +7,6 @@ import (
 )
 
 func Eval(game game.Game) (*game.Move, int) {
-	game.PrintBoard()
-
 	bestScore := math.MinInt
 	moves := game.LegalMoves()
 

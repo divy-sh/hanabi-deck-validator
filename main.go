@@ -9,13 +9,26 @@ import (
 
 func main() {
 	// play()
-	eval()
+	evalIterate()
+	// eval()
 }
 
 func eval() {
 	g := game.NewGame()
+	g.PrintBoard()
 	_, score := engine.Eval(g)
 	fmt.Printf("\nFinal Score: %d\n", score)
+}
+
+func evalIterate() {
+	totalScore := 0
+	totalIterations := 100000
+	for range totalIterations {
+		g := game.NewGame()
+		_, score := engine.Eval(g)
+		totalScore += score
+	}
+	fmt.Printf("\nFinal Score: %f\n", float64(totalScore)/float64(totalIterations))
 }
 
 func play() {

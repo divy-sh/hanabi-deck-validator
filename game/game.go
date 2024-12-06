@@ -23,14 +23,14 @@ type Game struct {
 func NewGame() Game {
 	playerCount := 2
 	colorCount := 3
-	hints := 3
+	hints := 8
 	misfires := 3
 	playerHandSize := 3
 
 	// Create deck
 	deck := []Card{}
 	deckBuild := map[int]int{
-		1: 3,
+		1: 2,
 		2: 2,
 		3: 1,
 	}
@@ -85,21 +85,25 @@ func NewGame() Game {
 }
 
 func (g *Game) LegalMoves() []Move {
-	moves := []Move{}
+	playMoves := []Move{}
+	discardMoves := []Move{}
 	player := g.Players[g.CurrentPlayer]
 
 	for i, card := range player {
 		if g.Board[card.Color]+1 == card.Number {
-			return []Move{{SelectedCardIndex: i, Play: true}}
+			playMoves = append(playMoves, Move{SelectedCardIndex: i, Play: true})
 		} else {
-			moves = append(moves, Move{SelectedCardIndex: i, Discard: true})
+			discardMoves = append(discardMoves, Move{SelectedCardIndex: i, Discard: true})
 		}
 	}
-	if g.Hints > 0 {
-		moves = append(moves, Move{Hint: true})
-	}
 
-	return moves
+	if len(playMoves) > 0 {
+		return playMoves
+	}
+	if g.Hints > 0 {
+		return []Move{{Hint: true}}
+	}
+	return discardMoves
 }
 
 func (g *Game) PushMove(move Move) (Game, error) {
@@ -188,7 +192,10 @@ func (g *Game) PrintBoard() {
 
 	fmt.Printf("Hints: %d\n", g.Hints)
 	fmt.Printf("Misfires Remaining: %d\n", g.MisfiresAllowed)
-	fmt.Printf("Remaining Cards: %d\n", len(g.RemainingCards))
+	fmt.Printf("Remaining Cards: ")
+	for _, card := range g.RemainingCards {
+		fmt.Printf("%s%d%s ", colors[card.Color], card.Number, reset)
+	}
 }
 
 func (g *Game) changePlayer() {
