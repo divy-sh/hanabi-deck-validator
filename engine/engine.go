@@ -25,8 +25,9 @@ func Eval(game game.Game) *game.Move {
 }
 
 func maximize(game game.Game, alpha int) int {
+	game.PrintBoard()
 	if game.IsGameOver() {
-		return game.GetGameScore()
+		return game.Score
 	}
 	bestScore := math.MinInt
 	moves := game.LegalMoves()
