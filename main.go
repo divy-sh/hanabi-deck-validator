@@ -15,7 +15,7 @@ func main() {
 func eval() {
 	g := game.NewGame()
 	_, score := engine.Eval(g)
-	fmt.Println(score)
+	fmt.Printf("\nFinal Score: %d\n", score)
 }
 
 func play() {

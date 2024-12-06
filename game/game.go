@@ -25,6 +25,7 @@ func NewGame() Game {
 	colorCount := 3
 	hints := 3
 	misfires := 3
+	playerHandSize := 3
 
 	// Create deck
 	deck := []Card{}
@@ -63,8 +64,8 @@ func NewGame() Game {
 	// Initialize hands
 	players := make([][]Card, playerCount)
 	for i := 0; i < playerCount; i++ {
-		players[i] = deck[:5]
-		deck = deck[5:]
+		players[i] = deck[:playerHandSize]
+		deck = deck[playerHandSize:]
 	}
 
 	// Initialize board
@@ -89,11 +90,11 @@ func (g *Game) LegalMoves() []Move {
 
 	for i, card := range player {
 		if g.Board[card.Color]+1 == card.Number {
-			moves = append(moves, Move{SelectedCardIndex: i, Play: true})
+			return []Move{{SelectedCardIndex: i, Play: true}}
+		} else {
+			moves = append(moves, Move{SelectedCardIndex: i, Discard: true})
 		}
-		moves = append(moves, Move{SelectedCardIndex: i, Discard: true})
 	}
-
 	if g.Hints > 0 {
 		moves = append(moves, Move{Hint: true})
 	}
@@ -116,6 +117,7 @@ func (g *Game) PushMove(move Move) (Game, error) {
 		if move.Play {
 			if newGame.Board[card.Color]+1 == card.Number {
 				newGame.Board[card.Color]++
+				newGame.Score++
 			} else {
 				newGame.MisfiresAllowed--
 			}
@@ -130,7 +132,6 @@ func (g *Game) PushMove(move Move) (Game, error) {
 		}
 	}
 
-	newGame.updateGameScore()
 	newGame.changePlayer()
 
 	return newGame, nil
@@ -188,13 +189,6 @@ func (g *Game) PrintBoard() {
 	fmt.Printf("Hints: %d\n", g.Hints)
 	fmt.Printf("Misfires Remaining: %d\n", g.MisfiresAllowed)
 	fmt.Printf("Remaining Cards: %d\n", len(g.RemainingCards))
-}
-
-func (g *Game) updateGameScore() {
-	g.Score = 0
-	for _, val := range g.Board {
-		g.Score += val
-	}
 }
 
 func (g *Game) changePlayer() {
