@@ -2,7 +2,6 @@ package game
 
 import (
 	"fmt"
-	"math"
 
 	"golang.org/x/exp/rand"
 )
@@ -22,6 +21,8 @@ func NewGame() Game {
 	// variables needed for the game
 	playerCount := 2
 	colorCount := 5
+	hints := 3
+	misfires := 3
 	DeckBuild := map[int]int{
 		1: 3,
 		2: 2,
@@ -62,8 +63,8 @@ func NewGame() Game {
 		Board:           newBoard,
 		Players:         players,
 		RemainingCards:  cards[playerCount*5:],
-		Hints:           math.MaxInt,
-		MisfiresAllowed: math.MaxInt,
+		Hints:           hints,
+		MisfiresAllowed: misfires,
 		TotalPlayers:    playerCount,
 		CurrentPlayer:   0,
 		Score:           0,
@@ -150,9 +151,31 @@ func (g *Game) IsGameOver() bool {
 	return false
 }
 
-func (g *Game) PrintBoard() string {
-	fmt.Println(g.Board)
-	return ""
+func (g *Game) PrintBoard() {
+	reset := "\033[0m"
+	colors := []string{"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m"} // Red, Green, Yellow, Blue, Magenta
+
+	// Print the board
+	fmt.Println("Board Status:")
+	for i, val := range g.Board {
+		fmt.Printf("%s%d%s ", colors[i], val, reset)
+	}
+	fmt.Println("")
+
+	// Print players' hands
+	for i, player := range g.Players {
+		fmt.Printf("Player %d's hand: ", i+1)
+		for _, card := range player {
+			fmt.Printf("%s%d%s ", colors[card.Color], card.Number, reset)
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+
+	// Print hints, misfires, and remaining cards
+	fmt.Printf("Hints: %d\n", g.Hints)
+	fmt.Printf("Misfires Remaining: %d\n", g.MisfiresAllowed)
+	fmt.Printf("Remaining Cards in Deck: %d\n", len(g.RemainingCards))
 }
 
 func (g *Game) updateGameScore() {
