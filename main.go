@@ -9,8 +9,8 @@ import (
 
 func main() {
 	// play()
-	// evalIterate()
-	eval()
+	evalIterate()
+	// eval()
 }
 
 func eval() {
@@ -26,6 +26,10 @@ func evalIterate() {
 	for range totalIterations {
 		g := game.NewGame()
 		_, score := engine.Eval(g)
+		if score != g.MaxPossibleScore {
+			g.PrintBoard()
+			fmt.Printf("Max Score: %d\n\n", score)
+		}
 		totalScore += score
 	}
 	fmt.Printf("\nFinal Score: %f\n", float64(totalScore)/float64(totalIterations))
