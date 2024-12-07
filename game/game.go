@@ -155,14 +155,15 @@ func (g *Game) deepCopy() Game {
 	}
 
 	return Game{
-		Board:           boardCopy,
-		Players:         playersCopy,
-		RemainingCards:  remainingCardsCopy,
-		Hints:           g.Hints,
-		MisfiresAllowed: g.MisfiresAllowed,
-		TotalPlayers:    g.TotalPlayers,
-		CurrentPlayer:   g.CurrentPlayer,
-		Score:           g.Score,
+		Board:            boardCopy,
+		Players:          playersCopy,
+		RemainingCards:   remainingCardsCopy,
+		Hints:            g.Hints,
+		MisfiresAllowed:  g.MisfiresAllowed,
+		TotalPlayers:     g.TotalPlayers,
+		CurrentPlayer:    g.CurrentPlayer,
+		Score:            g.Score,
+		MaxPossibleScore: g.MaxPossibleScore,
 	}
 }
 
@@ -196,6 +197,7 @@ func (g *Game) PrintBoard() {
 	for _, card := range g.RemainingCards {
 		fmt.Printf("%s%d%s ", colors[card.Color], card.Number, reset)
 	}
+	fmt.Println()
 }
 
 func (g *Game) changePlayer() {

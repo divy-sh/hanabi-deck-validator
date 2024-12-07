@@ -9,8 +9,8 @@ import (
 
 func main() {
 	// play()
-	evalIterate()
-	// eval()
+	// evalIterate()
+	eval()
 }
 
 func eval() {
