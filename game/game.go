@@ -22,17 +22,18 @@ type Game struct {
 // NewGame initializes a new Hanabi game.
 func NewGame() Game {
 	playerCount := 2
-	colorCount := 3
+	colorCount := 4
 	hints := 8
 	misfires := 3
-	playerHandSize := 3
+	playerHandSize := 4
 
 	// Create deck
 	deck := []Card{}
 	deckBuild := map[int]int{
 		1: 2,
 		2: 2,
-		3: 1,
+		3: 2,
+		4: 1,
 	}
 
 	maxKey := 0
