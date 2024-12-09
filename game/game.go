@@ -22,18 +22,17 @@ type Game struct {
 // NewGame initializes a new Hanabi game.
 func NewGame() Game {
 	playerCount := 2
-	colorCount := 4
-	hints := 8
+	colorCount := 3
+	hints := 3
 	misfires := 3
-	playerHandSize := 4
+	playerHandSize := 3
 
 	// Create deck
 	deck := []Card{}
 	deckBuild := map[int]int{
 		1: 2,
 		2: 2,
-		3: 2,
-		4: 1,
+		3: 1,
 	}
 
 	maxKey := 0
@@ -90,6 +89,10 @@ func (g *Game) LegalMoves() []Move {
 	discardMoves := []Move{}
 	player := g.Players[g.CurrentPlayer]
 
+	if g.Hints > 0 {
+		discardMoves = append(discardMoves, Move{Hint: true})
+	}
+
 	for i, card := range player {
 		if g.Board[card.Color]+1 == card.Number {
 			playMoves = append(playMoves, Move{SelectedCardIndex: i, Play: true})
@@ -100,9 +103,6 @@ func (g *Game) LegalMoves() []Move {
 
 	if len(playMoves) > 0 {
 		return playMoves
-	}
-	if g.Hints > 0 {
-		return []Move{{Hint: true}}
 	}
 	return discardMoves
 }

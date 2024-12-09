@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/divy-sh/hanabi-deck-validator/engine"
 	"github.com/divy-sh/hanabi-deck-validator/game"
@@ -9,8 +10,14 @@ import (
 
 func main() {
 	// play()
-	evalIterate()
+	timeIt("evalIterate", evalIterate)
 	// eval()
+}
+
+func timeIt(name string, f func()) {
+	start := time.Now()
+	f()
+	fmt.Printf("%s took %v to complete\n", name, time.Since(start))
 }
 
 func eval() {
@@ -21,18 +28,20 @@ func eval() {
 }
 
 func evalIterate() {
-	totalScore := 0
-	totalIterations := 100000
-	for range totalIterations {
+	scoresDistribution := map[int]int{}
+	totalIterations := 10000
+	for i := range totalIterations {
+		fmt.Printf("\rProgress: %f", float64(i)/float64(totalIterations-1)*100)
 		g := game.NewGame()
 		_, score := engine.Eval(g)
-		if score != g.MaxPossibleScore {
-			g.PrintBoard()
-			fmt.Printf("Max Score: %d\n\n", score)
-		}
-		totalScore += score
+		scoresDistribution[score] += 1
 	}
-	fmt.Printf("\nFinal Score: %f\n", float64(totalScore)/float64(totalIterations))
+	totalScore := 0
+	for i := range scoresDistribution {
+		totalScore += i * scoresDistribution[i]
+	}
+	fmt.Printf("\r\nMean Score: %f\n", float64(totalScore)/float64(totalIterations))
+	fmt.Printf("Score Distribution: %v\n", scoresDistribution)
 }
 
 func play() {

@@ -17,6 +17,9 @@ func Eval(game game.Game) (*game.Move, int) {
 	for _, move := range moves {
 		newBoard, _ := game.PushMove(move)
 		score := maximize(newBoard)
+		if score >= game.MaxPossibleScore {
+			return &move, score
+		}
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
@@ -34,6 +37,9 @@ func maximize(game game.Game) int {
 	for _, move := range moves {
 		newBoard, _ := game.PushMove(move)
 		score := maximize(newBoard)
+		if score >= game.MaxPossibleScore {
+			return score
+		}
 		bestScore = max(bestScore, score)
 	}
 	return bestScore
