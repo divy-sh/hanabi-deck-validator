@@ -7,7 +7,7 @@ import (
 )
 
 func Eval(game game.Game) int {
-	bestScore := math.MinInt
+	bestScore := 0
 	moves := game.LegalMoves()
 
 	if len(moves) == 0 {
