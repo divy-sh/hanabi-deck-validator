@@ -201,10 +201,14 @@ func (g *Game) PrintBoard() {
 	fmt.Println()
 }
 
-func (g *Game) changePlayer() {
-	g.CurrentPlayer = (g.CurrentPlayer + 1) % g.TotalPlayers
-}
-
 func (g *Game) IsGameOver() bool {
 	return g.MisfiresAllowed <= 0 || len(g.RemainingCards) == 0 || g.Score == g.MaxPossibleScore
+}
+
+/*
+Private Functions.
+*/
+
+func (g *Game) changePlayer() {
+	g.CurrentPlayer = (g.CurrentPlayer + 1) % g.TotalPlayers
 }

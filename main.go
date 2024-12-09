@@ -23,7 +23,7 @@ func timeIt(name string, f func()) {
 func eval() {
 	g := game.NewGame()
 	g.PrintBoard()
-	_, score := engine.Eval(g)
+	score := engine.Eval(g)
 	fmt.Printf("\nFinal Score: %d\n", score)
 }
 
@@ -33,7 +33,7 @@ func evalIterate() {
 	for i := range totalIterations {
 		fmt.Printf("\rProgress: %f", float64(i)/float64(totalIterations-1)*100)
 		g := game.NewGame()
-		_, score := engine.Eval(g)
+		score := engine.Eval(g)
 		scoresDistribution[score] += 1
 	}
 	totalScore := 0

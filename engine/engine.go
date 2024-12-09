@@ -6,26 +6,24 @@ import (
 	"github.com/divy-sh/hanabi-deck-validator/game"
 )
 
-func Eval(game game.Game) (*game.Move, int) {
+func Eval(game game.Game) int {
 	bestScore := math.MinInt
 	moves := game.LegalMoves()
 
 	if len(moves) == 0 {
-		return nil, bestScore
+		return 0
 	}
-	bestMove := moves[0]
-	for _, move := range moves {
+	for _, move := range game.LegalMoves() {
 		newBoard, _ := game.PushMove(move)
 		score := maximize(newBoard)
 		if score >= game.MaxPossibleScore {
-			return &move, score
+			return score
 		}
 		if score > bestScore {
 			bestScore = score
-			bestMove = move
 		}
 	}
-	return &bestMove, bestScore
+	return bestScore
 }
 
 func maximize(game game.Game) int {
@@ -33,8 +31,7 @@ func maximize(game game.Game) int {
 		return game.Score
 	}
 	bestScore := math.MinInt
-	moves := game.LegalMoves()
-	for _, move := range moves {
+	for _, move := range game.LegalMoves() {
 		newBoard, _ := game.PushMove(move)
 		score := maximize(newBoard)
 		if score >= game.MaxPossibleScore {
