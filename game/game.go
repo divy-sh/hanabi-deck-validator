@@ -5,6 +5,18 @@ import (
 	"math/rand"
 )
 
+type Card struct {
+	Color  int
+	Number int
+}
+
+type Move struct {
+	Discard           bool
+	Hint              bool
+	Play              bool
+	SelectedCardIndex int
+}
+
 // Game holds the state of the game.
 type Game struct {
 	Board            []int
